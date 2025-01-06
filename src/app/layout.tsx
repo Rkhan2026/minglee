@@ -4,6 +4,7 @@ import "./globals.css";
 import {ClerkProvider,} from '@clerk/nextjs'
 import { ThemeProvider } from "@/components/Themeprovider";
 import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en" suppressHydrationWarning>{/* supressHydrationWarning is use dto prevent hyderation error*/}
+    <html lang="en" suppressHydrationWarning={true}>{/* supressHydrationWarning is use dto prevent hyderation error*/}
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
       <ThemeProvider
             attribute="class"
@@ -46,7 +47,9 @@ export default function RootLayout({
                     {/*Purpose: Creates a grid-based layout for arranging content, enabling a sidebar and main content area.*/ }
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6"> 
                     {/*Purpose: Defines the sidebar space.*/}
-                        <div className="hidden lg:block lg:col-span-3"> //Sidebar</div>
+                        <div className="hidden lg:block lg:col-span-3"> 
+                              <Sidebar/>
+                        </div>
                         {/*Purpose: Defines the main content area where dynamic content (children) is rendered. */}
                         <div className="lg:col-span-9">{children}</div>
                     </div>
