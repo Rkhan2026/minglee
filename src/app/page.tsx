@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import ModeToggle from "@/components/ModeToggle";
 
-export default function Home() {
+export default async function Home() {
   return (
     <h1>Welcome To Home Page</h1>
   );
