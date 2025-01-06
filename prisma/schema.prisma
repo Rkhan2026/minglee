@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model: Represents a user in the system
+model User {
+  id String @id @default(cuid()) // Unique identifier (auto-generated)
+  email String @unique
+  username String @unique
+  clerkId String @unique  //Unique identifier from an external service (e.g., Clerk)
+  name String? // Optional name
+  bio String?
+  image String?
+  location String?
+  website String?
+  createdAt DateTime @default(now()) // User creation timestamp
+  updatedAt DateTime @updatedAt // Automatically updated on record modification
+
+  // Relations or Relationships:: 
+  posts Post[] // One-to-many: A user can have multiple posts
+  comments Comment[] // One-to-many: A user can have multiple comments
+  likes Like[] //  One-to-many: A user can like multiple posts
+
+  followers Follows[] @relation("following") // Users who follow this user
+  following Follows[] @relation("follower") // Users who this user follows
+
+  notifications Notification[] @relation("userNotifications") // notifications received by a user
+  notificationsCreated Notification[] @relation("notificationCreator") // notifications triggered by a user
+}
+
+// Post model: Represents a post created by a user
+model Post{
+  id        String    @id @default(cuid())
+  authorId String
+  content String?
+  image String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  author User @relation(fields: [authorId],references: [id], onDelete: Cascade) // The user who created the post and cascade delete means delete all posts if author is deleted
+  comments Comment[] // One-to-many: A post can have multiple comments
+  likes Like[]  // One-to-many: A post can have multiple likes
+  notifications Notification[] // Notifications related to this post
+}
+
+// Comment model: Represents a comment on a post
+model Comment{
+  id String @id @default(cuid())
+  content String // Comment content
+  authorId String // Foreign key referencing User
+  postId String // Foreign key referencing Post
+  createdAt DateTime @default(now()) // Comment creation timestamp
+
+  // Relations
+  author User @relation(fields: [authorId],references: [id],onDelete: Cascade) // The user who wrote the comment
+  post Post @relation(fields: [postId],references: [id], onDelete: Cascade) // The post the comment belongs to
+  notifications Notification[] // Notifications related to this comment
+
+  @@index([authorId,postId]) // composite index for faster queries
+}
+
+// Like model: Represents a "like" on a post
+model Like {
+  id        String   @id @default(cuid())
+  postId    String  // Foreign key referencing Post
+  userId    String  // Foreign key referencing User
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) // The user who liked the post
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade) // The post that was liked
+
+  @@index([userId,postId]) // composite index for faster queries
+  @@unique([userId,postId]) // this prevents same user liking post twice
+}
+
+// Follows model: Represents a "follow" relationship between users
+model Follows{
+  followerId String  // User ID of the follower
+  followingId String // User ID of the user being followed
+  createdAt DateTime @default(now()) // Follow relationship creation timestamp
+
+  // Relationships:
+  follower    User     @relation("follower", fields: [followerId], references: [id], onDelete: Cascade) // The user who is following
+  following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)  // The user being followed
+
+  @@index([followerId,followingId]) // composite index for faster queries
+  @@id([followerId, followingId]) // composite primary key prevents duplicate follows
+}
+
+// Notification model: Represents a notification for a user
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String   // Foreign key referencing the user who received the notification
+  creatorId String   // Foreign key referencing the user who triggered the notification               
+  type      NotificationType   // Enum: Type of notification (e.g., LIKE, COMMENT, FOLLOW)
+  read      Boolean  @default(false) // Whether the notification has been read
+  postId    String?    // Optional: Related post     
+  commentId String?    // Optional: Related comment            
+  createdAt DateTime @default(now())  // Notification creation timestamp
+  
+  // Relations
+  user      User     @relation("userNotifications", fields: [userId], references: [id], onDelete: Cascade) // User who received the notification
+  creator   User     @relation("notificationCreator", fields: [creatorId], references: [id], onDelete: Cascade) // User who triggered the notification
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade) // Related post (if applicable)
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade) // Related comment (if applicable)
+
+  @@index([userId, createdAt]) // Index for faster queries
+}
+
+//In Prisma ORM, an enum is a data type used to define a set of predefined values 
+//that a field in your database model can hold. It helps enforce data consistency by 
+//restricting the values that a column can take. This is especially useful when you have a 
+//field with a limited number of valid options, such as statuses, roles, or categories.
+
+// NotificationType enum: Defines valid types of notifications
+enum NotificationType {
+  LIKE     
+  COMMENT 
+  FOLLOW   
+}
