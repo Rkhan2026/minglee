@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import {ClerkProvider,} from '@clerk/nextjs'
 import { ThemeProvider } from "@/components/Themeprovider";
+import Navbar from "@/components/Navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
       <ThemeProvider
             attribute="class"
@@ -35,10 +36,35 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-        {children}
+          {/*Purpose: Acts as the container for the entire visible content*/}
+          <div className="min-h-screen"> 
+            <Navbar/>
+            {/*Purpose: Wraps the content of the page to ensure consistent alignment and spacing.*/ }
+              <main className="py-8"> 
+                  {/*Purpose: Container to center the content*/}
+                  <div className="max-w-7xl mx-auto px-4">
+                    {/*Purpose: Creates a grid-based layout for arranging content, enabling a sidebar and main content area.*/ }
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6"> 
+                    {/*Purpose: Defines the sidebar space.*/}
+                        <div className="hidden lg:block lg:col-span-3"> //Sidebar</div>
+                        {/*Purpose: Defines the main content area where dynamic content (children) is rendered. */}
+                        <div className="lg:col-span-9">{children}</div>
+                    </div>
+                  </div>                
+                </main>
+              </div>       
         </ThemeProvider>
       </body>
     </html>
     </ClerkProvider>
   );
 }
+{/*
+
+  +------------------------------------------------+
+  | Navbar                                         |
+  +------------------------------------------------+
+  | Sidebar (3 columns) | Main Content (9 columns) |
+  +------------------------------------------------+
+
+*/}
