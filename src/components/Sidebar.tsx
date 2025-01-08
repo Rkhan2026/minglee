@@ -19,17 +19,19 @@ export default async function Sidebar() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center">
-               
+             {/* <Link
+              href={`/profile/${user.username}`}
+              className="flex flex-col items-center justify-center">*/}
              
                   <Avatar className="w-20 h-20 border-2 ">
                     <AvatarImage src={user.image || "/avatar.png"} />
                   </Avatar>
-    
+                
                   <div className="mt-4 space-y-1">
                     <h3 className="font-semibold">{user.name}</h3>
                     <p className="text-sm text-muted-foreground">{user.username}</p>
                   </div>
-    
+              {/*</Link>*/}
                 {user.bio && <p className="mt-3 text-sm text-muted-foreground">{user.bio}</p>}
     
                 <div className="w-full">

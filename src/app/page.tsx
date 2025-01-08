@@ -2,6 +2,7 @@
 // This function allows us to retrieve the currently authenticated user's information.
 import { currentUser } from "@clerk/nextjs/server";
 import CreatePost from "@/components/CreatePost";
+import WhoToFollow from "@/components/WhoToFollow";
 
 export default async function Home() {
   // Fetching the current user's information using the `currentUser` function.
@@ -20,7 +21,7 @@ export default async function Home() {
           {/* A right sidebar section, visible only on large screens (hidden on smaller ones).
           It spans 4 columns and is "sticky", staying in view as the user scrolls. */}
         <div className="hidden lg:block lg:col-span-4 sticky top-20">
-          Who To Follow
+          <WhoToFollow/>
         </div>
     </div>
   );
