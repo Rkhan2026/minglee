@@ -64,7 +64,7 @@ export async function getDbUserId() {
     if (!user) throw new Error("User not found");
   
     return user.id;
-  }
+}
   
   export async function getRandomUsers() {
     try {
