@@ -1,3 +1,4 @@
+// Directive indicating that this file runs server-side in a server-side rendering (SSR) context
 "use server";
 
 import prisma from "@/lib/prisma";

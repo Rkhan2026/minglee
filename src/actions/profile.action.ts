@@ -1,3 +1,4 @@
+// Directive indicating that this file runs server-side in a server-side rendering (SSR) context
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
@@ -5,6 +6,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getDbUserId } from "./user.action";
 
+// This function fetches a user profile by username
 export async function getProfileByUsername(username: string) {
   try {
     const user = await prisma.user.findUnique({
@@ -35,6 +37,7 @@ export async function getProfileByUsername(username: string) {
   }
 }
 
+//This function fetches all posts created by a user
 export async function getUserPosts(userId: string) {
   try {
     const posts = await prisma.post.findMany({
@@ -89,6 +92,7 @@ export async function getUserPosts(userId: string) {
   }
 }
 
+//This function fetches all posts liked by a user
 export async function getUserLikedPosts(userId: string) {
   try {
     const likedPosts = await prisma.post.findMany({
@@ -147,6 +151,7 @@ export async function getUserLikedPosts(userId: string) {
   }
 }
 
+//This function updates a user profile
 export async function updateProfile(formData: FormData) {
   try {
     const { userId: clerkId } = await auth();
@@ -175,6 +180,7 @@ export async function updateProfile(formData: FormData) {
   }
 }
 
+//// This function checks who the current user is following
 export async function isFollowing(userId: string) {
   try {
     const currentUserId = await getDbUserId();
